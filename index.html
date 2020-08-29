@@ -13,12 +13,32 @@
     </div>
     <div class="form">
         <form onsubmit="return false">
-            <div class="authorInput">
+            <div class="input">
                 <label for="title">
                     <strong>Title: </strong>
                 </label>
-                <input type="text" name="author" required>
+                <input id="titleInput" type="text" name="title" required>
             </div>
+            <div class="input">
+                <label for="author">
+                    <strong>Author: </strong>
+                </label>
+                <input id="authorInput" type="text" name="author" required>
+            </div>
+            <div class="input">
+                <label for="pages">
+                    <strong>Pages: </strong>
+                </label>
+                <input id="pagesInput" type="text" name="pages" required>
+            </div>
+            <div class="radio">
+                <input type="radio" name="readStatus" value="Y">
+                <label for="readStatus">Yes</label>
+                <input type="radio" name="readStatus" value="N">
+                <label for="readStatus">No</label>
+            </div>
+            <button type="button" id="submit">Submit</button>
+            <button id="cancel">Cancel</button>
         </form>
     </div>
     <div class="container"></div>
