@@ -11,6 +11,7 @@ const pagesInput = document.querySelector("#pagesInput");
 const radioInputs = document.querySelectorAll("input[type='radio']");
 const addBookButton = document.querySelector("#addBook");
 const submitButton = document.querySelector("#submit");
+
 addBookButton.addEventListener("click", (e) => {
     formDiv.style.display = "block";
     addBookButton.style.display = "none";
@@ -37,10 +38,10 @@ function Book(author, title, pages, readStatus) {
     this.rendered = false;
     this.info = function() {
         if (readStatus) {
-          return title + " by " + author + ", " + pages +" pages"+ ", read."
+          return title + " by " + author + ", " + pages +" pages";
         }
         else {
-          return title + " by " + author + ", " + pages +" pages"+ ", not read yet."
+          return title + " by " + author + ", " + pages +" pages";
         }
       }
 }
@@ -54,8 +55,8 @@ function render() {
     myLibrary.forEach((book) => {
        if (!book.rendered) {
         book.rendered = true;
-        const buttons = createButtons(book.index);
         const bookDiv = document.createElement("div");
+        const buttons = createButtons(book.index, bookDiv, book);
         bookDiv.dataset.id = book.index;
         bookDiv.classList.add("books");
         const para = document.createElement("p");
@@ -69,13 +70,33 @@ function render() {
     });
 }
 
-function createButtons(id) {
+function createButtons(id, div, book) {
     const readButton = document.createElement("button");
     const deleteButton = document.createElement("button");
     readButton.dataset.id = id;
-    readButton.textContent = "Read"; //ovo nije gotovo
+    if (book.readStatus) {
+        readButton.textContent = "Read";
+    } 
+    else {
+        readButton.textContent = "Not Read";
+    }
+        //ovo nije gotovo
     deleteButton.dataset.id = id;
     deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", (e) => {
+        div.remove();
+        //update data-ids---mozda ipak ne
+    });
+    readButton.addEventListener("click", (e) => {
+        if (e.target.textContent === "Read") {
+            readButton.textContent = "Not Read";
+            book.readStatus = false;
+        }
+        else {
+            readButton.textContent = "Read";
+            book.readStatus = true;
+        }
+    });
     return [readButton, deleteButton];
 }
 
