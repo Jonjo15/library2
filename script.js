@@ -11,6 +11,7 @@ const pagesInput = document.querySelector("#pagesInput");
 const radioInputs = document.querySelectorAll("input[type='radio']");
 const addBookButton = document.querySelector("#addBook");
 const submitButton = document.querySelector("#submit");
+const cancelButton = document.querySelector("#cancel");
 
 addBookButton.addEventListener("click", (e) => {
     formDiv.style.display = "block";
@@ -26,7 +27,13 @@ submitButton.addEventListener("click", (e) => {
     //render
     render();
     formDiv.style.display = "none";
-    addBookButton.style.display = "block";
+    addBookButton.style.display = "inline-block";
+});
+
+cancelButton.addEventListener("click", (e) => {
+    formDiv.style.display = "none";
+    addBookButton.style.display = "inline-block";
+    resetInputs();
 });
 
 function Book(author, title, pages, readStatus) {
@@ -85,7 +92,10 @@ function createButtons(id, div, book) {
     deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", (e) => {
         div.remove();
+        //remove from myLibrary
+        myLibrary.splice(id, 1);
         //update data-ids---mozda ipak ne
+        updateIndices();
     });
     readButton.addEventListener("click", (e) => {
         if (e.target.textContent === "Read") {
@@ -108,10 +118,14 @@ function createBookObjectFromInputs() {
     else {
         read = false;
     }
-    let book = new Book(titleInput.value,authorInput.value, pagesInput.value, read);
+    let book = new Book(authorInput.value,titleInput.value, pagesInput.value, read);
     return book;
 }
-
+function updateIndices() {
+    myLibrary.forEach((book, index) => {
+        book.index = index;
+    });
+}
 function resetInputs() {
     titleInput.value = "";
     authorInput.value = "";
