@@ -33,7 +33,14 @@ button {
 }
 input {
     margin-bottom: 15px;
+    margin-left: 25px;
 }
 label {
     width: 80px;
+}
+#authorInput {
+    margin-left: 13px;
+}
+#titleInput {
+    margin-left: 30px;
 }
