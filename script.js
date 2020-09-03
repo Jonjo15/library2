@@ -1,3 +1,22 @@
+class Book {
+    constructor(author, title, pages, readStatus) {
+        this.author = author;
+        this.title = title;
+        this.pages = pages;
+        this.readStatus = readStatus;
+        this.index;
+        this.rendered = false;
+    }
+    info() {
+        if (this.readStatus) {
+            return this.title + " by " + this.author + ", " + this.pages +" pages";
+          }
+          else {
+            return this.title + " by " + this.author + ", " + this.pages +" pages";
+          }
+    }
+}
+
 let myLibrary = [];
 const mainDiv = document.createElement("div");
 mainDiv.classList.add("library");
@@ -36,7 +55,7 @@ cancelButton.addEventListener("click", (e) => {
     resetInputs();
 });
 
-function Book(author, title, pages, readStatus) {
+/* function Book(author, title, pages, readStatus) {
     this.author = author;
     this.title = title;
     this.pages = pages;
@@ -44,14 +63,14 @@ function Book(author, title, pages, readStatus) {
     this.index;
     this.rendered = false;
     this.info = function() {
-        if (readStatus) {
+        if (this.readStatus) {
           return title + " by " + author + ", " + pages +" pages";
         }
         else {
           return title + " by " + author + ", " + pages +" pages";
         }
       }
-}
+} */
 
 function addBookToTheLibrary(book) {
     myLibrary.push(book);
