@@ -1,3 +1,22 @@
+// const firebaseConfig = {
+//   apiKey: "AIzaSyD47yUvdrqtMcSmKlHARHaLEO54QBlpe7Y",
+//   authDomain: "library2-15125.firebaseapp.com",
+//   databaseURL: "https://library2-15125.firebaseio.com",
+//   projectId: "library2-15125",
+//   storageBucket: "library2-15125.appspot.com",
+//   messagingSenderId: "709033153782",
+//   appId: "1:709033153782:web:fee61d1bb4682ff909c8d7"
+// };
+// firebase.initializeApp(firebaseConfig);
+
+// // Get a reference to the database service
+const test = document.getElementById("test")
+var libraryRef = firebase.database().ref().child("library");
+console.log(libraryRef)
+libraryRef.on("child_added", snap => console.log("hey"))
+// const ref = database.ref("library")
+// ref.push("asas")
+// console.log(firebase.database().ref())
 class Book {
   constructor(author, title, pages, readStatus) {
     this.author = author;
@@ -90,12 +109,22 @@ cancelButton.addEventListener("click", (e) => {
 function addBookToTheLibrary(book) {
   myLibrary.push(book);
   book.index = myLibrary.length - 1;
+  writeUserData(book.index,book.title,book.author,book.readStatus, book.pages, book.rendered)
 }
-
+function writeUserData(index, title, author, readStatus, pages, rendered) {
+    firebase.database().ref('library/' + index).set({
+      author: author,
+      title: title,
+      pages : pages,
+      readStatus: readStatus,
+      rendered: rendered
+    });
+  }
 function render() {
   myLibrary.forEach((book) => {
     if (!book.rendered) {
       book.rendered = true;
+      firebase.database().ref('library/' + book.index + "/rendered").set(true)
       const bookDiv = document.createElement("div");
       const buttons = createButtons(book.index, bookDiv, book);
       bookDiv.dataset.id = book.index;
