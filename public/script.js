@@ -12,6 +12,11 @@
 // // Get a reference to the database service
 const test = document.getElementById("test")
 var libraryRef = firebase.database().ref().child("library");
+var lengthRef = firebase.database().ref().child("length")
+let length = 0;
+lengthRef.on('value', function(snapshot) {
+    length = snapshot.val()
+});
 console.log(libraryRef)
 libraryRef.on("child_added", snap => console.log("hey"))
 // const ref = database.ref("library")
@@ -108,6 +113,9 @@ cancelButton.addEventListener("click", (e) => {
 
 function addBookToTheLibrary(book) {
   myLibrary.push(book);
+  // lengthRef.set(lengthRef.val() +1)
+  length += 1;
+  lengthRef.set(length);
   book.index = myLibrary.length - 1;
   writeUserData(book.index,book.title,book.author,book.readStatus, book.pages, book.rendered)
 }
@@ -156,6 +164,9 @@ function createButtons(id, div, book) {
     div.remove();
     //remove from myLibrary
     myLibrary.splice(id, 1);
+    firebase.database().ref().child('library/' + book.index).set(null)
+    length -= 1;
+    lengthRef.set(length)
     //update data-ids---mozda ipak ne
     updateIndices();
   });
@@ -163,9 +174,11 @@ function createButtons(id, div, book) {
     if (e.target.textContent === "Read") {
       readButton.textContent = "Not Read";
       book.readStatus = false;
+      firebase.database().ref('library/' + book.index + "/readStatus").set(false)
     } else {
       readButton.textContent = "Read";
       book.readStatus = true;
+      firebase.database().ref('library/' + book.index + "/readStatus").set(true)
     }
   });
   return [readButton, deleteButton];
@@ -188,7 +201,18 @@ function createBookObjectFromInputs() {
 }
 function updateIndices() {
   myLibrary.forEach((book, index) => {
+    firebase.database().ref().child("library/" + book.index).set(null)
     book.index = index;
+    // function writeUserData(index, title, author, readStatus, pages, rendered) {
+    //   firebase.database().ref('library/' + index).set({
+    //     author: author,
+    //     title: title,
+    //     pages : pages,
+    //     readStatus: readStatus,
+    //     rendered: rendered
+    //   });
+    // }
+    writeUserData(index, book.title, book.author, book.readStatus, book.pages, book.rendered)
   });
 }
 function resetInputs() {
@@ -196,6 +220,9 @@ function resetInputs() {
   authorInput.value = "";
   pagesInput.value = "";
 }
+// function renderDb() {
+//   libraryRef.ch
+// }
 let book1 = new Book("a", "b", 3, true);
 let book2 = new Book("s", "sa", 121, false);
 addBookToTheLibrary(book1);
