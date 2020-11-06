@@ -202,6 +202,7 @@ function createBookObjectFromInputs() {
 function updateIndices() {
   myLibrary.forEach((book, index) => {
     firebase.database().ref().child("library/" + book.index).set(null)
+    // document.querySelectorAll(".books")
     book.index = index;
     // function writeUserData(index, title, author, readStatus, pages, rendered) {
     //   firebase.database().ref('library/' + index).set({
