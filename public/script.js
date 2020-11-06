@@ -12,7 +12,7 @@
 // // Get a reference to the database service
 const test = document.getElementById("test")
 var libraryRef = firebase.database().ref().child("library");
-var lengthRef = firebase.database().ref().child("length")
+var lengthRef = firebase.database().ref().child("library/length")
 let length = 0;
 lengthRef.on('value', function(snapshot) {
     length = snapshot.val()
