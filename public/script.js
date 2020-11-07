@@ -8,35 +8,6 @@
 //   appId: "1:709033153782:web:fee61d1bb4682ff909c8d7"
 // };
 // firebase.initializeApp(firebaseConfig);
-
-// // Get a reference to the database service
-const test = document.getElementById("test")
-var libraryRef = firebase.database().ref().child("library");
-var lengthRef = firebase.database().ref().child("library/length")
-let length = 0;
-let init = 0;
-lengthRef.once('value', function(snapshot) {
-  // console.log(snapshot.val())
-    length = snapshot.val()
-});
-console.log(libraryRef)
-libraryRef.on("child_added", snapshot => {
-  if (typeof snapshot.val() === "object" && (init < length) && snapshot.val().author) {
-    init += 1;
-    let title = snapshot.val().title;
-    let author = snapshot.val().author;
-    let pages = snapshot.val().pages;
-    let readStatus = snapshot.val().readStatus;
-    let book = new Book(author, title, pages, readStatus)
-    firebase.database().ref().child("library/" + init + "/rendered").set(false)
-    // snapshot.val().rendered.set(false)
-    addBookToTheLibrary(book)
-    render()
-  }
-})
-// const ref = database.ref("library")
-// ref.push("asas")
-// console.log(firebase.database().ref())
 class Book {
   constructor(author, title, pages, readStatus) {
     this.author = author;
@@ -54,6 +25,49 @@ class Book {
     }
   }
 }
+// // Get a reference to the database service
+const test = document.getElementById("test")
+var libraryRef = firebase.database().ref().child("library");
+var lengthRef = firebase.database().ref().child("library/length")
+let length = 0;
+let init = 0;
+let initLength;
+let dataLoaded = false;
+lengthRef.on('value', function(snapshot) {
+  // console.log(snapshot.val())
+    length = snapshot.val()
+    if(init === 0) {
+      initLength = length
+    }
+    console.log(length)
+    // initLength = snapshot.val()
+});
+// console.log(libraryRef)
+libraryRef.on("child_added", snapshot => {
+  console.log(init)
+  if ((typeof snapshot.val() === "object") && (init < initLength - 1 ) && (typeof snapshot.val().author === "string")) {
+    
+    let title = snapshot.val().title;
+    let author = snapshot.val().author;
+    let pages = snapshot.val().pages;
+    let readStatus = snapshot.val().readStatus;
+    let book = new Book(author, title, pages, readStatus)
+    console.log(init)
+    firebase.database().ref().child("library/" + init + "/rendered").set(false)
+    
+    // snapshot.val().rendered.set(false)
+    addBookToTheLibrary(book)
+    init += 1;
+    if (init === initLength) {
+      dataLoaded = true;
+    }
+    render()
+  }
+})
+// const ref = database.ref("library")
+// ref.push("asas")
+// console.log(firebase.database().ref())
+
 
 let myLibrary = [];
 const mainDiv = document.createElement("div");
@@ -131,10 +145,10 @@ function addBookToTheLibrary(book) {
   // lengthRef.set(lengthRef.val() +1)
   
   book.index = myLibrary.length - 1;
-  if (init === length) {
-    length += 1;
-    lengthRef.set(length);
-    init += 1;
+  if (dataLoaded) {
+    // length += 1;
+    // lengthRef.set(length);
+    // init += 1;
     writeUserData(book.index,book.title,book.author,book.readStatus, book.pages, book.rendered)
   }
   
@@ -148,11 +162,11 @@ function writeUserData(index, title, author, readStatus, pages, rendered) {
       rendered: rendered
     });
   }
-function render() {
-  myLibrary.forEach((book) => {
+ async function render() {
+  myLibrary.forEach((book, i) => {
     if (!book.rendered) {
       book.rendered = true;
-      firebase.database().ref('library/' + book.index + "/rendered").set(true)
+      await firebase.database().ref('library/' + i + "/rendered").set(true)
       const bookDiv = document.createElement("div");
       const buttons = createButtons(book.index, bookDiv, book);
       bookDiv.dataset.id = book.index;
