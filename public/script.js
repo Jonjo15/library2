@@ -14,11 +14,26 @@ const test = document.getElementById("test")
 var libraryRef = firebase.database().ref().child("library");
 var lengthRef = firebase.database().ref().child("library/length")
 let length = 0;
-lengthRef.on('value', function(snapshot) {
+let init = 0;
+lengthRef.once('value', function(snapshot) {
+  // console.log(snapshot.val())
     length = snapshot.val()
 });
 console.log(libraryRef)
-libraryRef.on("child_added", snap => console.log("hey"))
+libraryRef.on("child_added", snapshot => {
+  if (typeof snapshot.val() === "object" && (init < length) && snapshot.val().author) {
+    init += 1;
+    let title = snapshot.val().title;
+    let author = snapshot.val().author;
+    let pages = snapshot.val().pages;
+    let readStatus = snapshot.val().readStatus;
+    let book = new Book(author, title, pages, readStatus)
+    firebase.database().ref().child("library/" + init + "/rendered").set(false)
+    // snapshot.val().rendered.set(false)
+    addBookToTheLibrary(book)
+    render()
+  }
+})
 // const ref = database.ref("library")
 // ref.push("asas")
 // console.log(firebase.database().ref())
@@ -114,10 +129,15 @@ cancelButton.addEventListener("click", (e) => {
 function addBookToTheLibrary(book) {
   myLibrary.push(book);
   // lengthRef.set(lengthRef.val() +1)
-  length += 1;
-  lengthRef.set(length);
+  
   book.index = myLibrary.length - 1;
-  writeUserData(book.index,book.title,book.author,book.readStatus, book.pages, book.rendered)
+  if (init === length) {
+    length += 1;
+    lengthRef.set(length);
+    init += 1;
+    writeUserData(book.index,book.title,book.author,book.readStatus, book.pages, book.rendered)
+  }
+  
 }
 function writeUserData(index, title, author, readStatus, pages, rendered) {
     firebase.database().ref('library/' + index).set({
@@ -230,13 +250,28 @@ function resetInputs() {
   authorInput.value = "";
   pagesInput.value = "";
 }
-function renderDb() {
-  for(let i = 0; i < length; i++) {
-    // let book = new Book()
-  }
-}
-let book1 = new Book("a", "b", 3, true);
-let book2 = new Book("s", "sa", 121, false);
-addBookToTheLibrary(book1);
-addBookToTheLibrary(book2);
-render();
+// function renderDb() {
+//   for(let i = 0; i < length; i++) {
+//     // let book = new Book()
+//     let title;
+//     let author;
+//     let pages;
+//     let readStatus;
+//     let book;
+//     firebase.database().ref().child("library/" + i).once("value").then(snapshot => {
+//       console.log("snapshot")
+//       title = snapshot.val().title;
+//       author = snapshot.val().author;
+//       pages = snapshot.val().pages;
+//       readStatus = snapshot.val().readStatus;
+//       book = new Book(author, title, pages, readStatus)
+//       addBookToTheLibrary(book)
+//     })
+//   }
+// }
+// let book1 = new Book("a", "b", 3, true);
+// let book2 = new Book("s", "sa", 121, false);
+// addBookToTheLibrary(book1);
+// addBookToTheLibrary(book2);
+// renderDb();
+// render()
