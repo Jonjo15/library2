@@ -230,9 +230,11 @@ function resetInputs() {
   authorInput.value = "";
   pagesInput.value = "";
 }
-// function renderDb() {
-//   libraryRef.ch
-// }
+function renderDb() {
+  for(let i = 0; i < length; i++) {
+    // let book = new Book()
+  }
+}
 let book1 = new Book("a", "b", 3, true);
 let book2 = new Book("s", "sa", 121, false);
 addBookToTheLibrary(book1);
