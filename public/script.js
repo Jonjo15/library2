@@ -31,6 +31,7 @@ var libraryRef = firebase.database().ref().child("library");
 var lengthRef = firebase.database().ref().child("library/length")
 let length = 0;
 let init = 0;
+let exampel = "Ivan"
 let initLength;
 let dataLoaded = false;
 lengthRef.on('value', function(snapshot) {
@@ -39,13 +40,13 @@ lengthRef.on('value', function(snapshot) {
     if(init === 0) {
       initLength = length
     }
-    console.log(length)
+    // console.log(length)
     // initLength = snapshot.val()
 });
 // console.log(libraryRef)
 libraryRef.on("child_added", snapshot => {
-  console.log(init)
-  if ((typeof snapshot.val() === "object") && (init < initLength - 1 ) && (typeof snapshot.val().author === "string")) {
+  // console.log(init)
+  if ((typeof snapshot.val() === "object") && (init < initLength ) && (typeof snapshot.val().author === "string")) {
     
     let title = snapshot.val().title;
     let author = snapshot.val().author;
@@ -146,8 +147,8 @@ function addBookToTheLibrary(book) {
   
   book.index = myLibrary.length - 1;
   if (dataLoaded) {
-    // length += 1;
-    // lengthRef.set(length);
+    length += 1;
+    lengthRef.set(length);
     // init += 1;
     writeUserData(book.index,book.title,book.author,book.readStatus, book.pages, book.rendered)
   }
@@ -162,11 +163,12 @@ function writeUserData(index, title, author, readStatus, pages, rendered) {
       rendered: rendered
     });
   }
- async function render() {
+render = () => {
   myLibrary.forEach((book, i) => {
+    console.log("is this working")
     if (!book.rendered) {
       book.rendered = true;
-      await firebase.database().ref('library/' + i + "/rendered").set(true)
+      firebase.database().ref('library/' + i + "/rendered").set(true)
       const bookDiv = document.createElement("div");
       const buttons = createButtons(book.index, bookDiv, book);
       bookDiv.dataset.id = book.index;
