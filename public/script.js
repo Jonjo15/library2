@@ -160,11 +160,11 @@ function createButtons(id, div, book) {
   //ovo nije gotovo
   deleteButton.dataset.id = id;
   deleteButton.textContent = "Delete";
-  deleteButton.addEventListener("click", (e) => {
+  deleteButton.addEventListener("click", async(e) => {
     div.remove();
     //remove from myLibrary
-    myLibrary.splice(id, 1);
-    firebase.database().ref().child('library/' + book.index).set(null)
+    myLibrary.splice(book.index, 1);
+    await firebase.database().ref().child('library/' + book.index).set(null)
     length -= 1;
     lengthRef.set(length)
     //update data-ids---mozda ipak ne
@@ -199,11 +199,17 @@ function createBookObjectFromInputs() {
   );
   return book;
 }
-function updateIndices() {
-  myLibrary.forEach((book, index) => {
-    firebase.database().ref().child("library/" + book.index).set(null)
-    // document.querySelectorAll(".books")
+ function updateIndices () {
+  myLibrary.forEach(async(book, index) => {
+    // firebase.database().ref().child("library/" + book.index).set(null)
+    document.querySelectorAll(".books").forEach((book, i ) => {
+      book.dataset.id = i;
+      book.querySelectorAll("button").forEach(button => button.dataset.id = i )
+    })
+    let prevIndex = book.index;
+    await firebase.database().ref().child("library/" + prevIndex).set(null)
     book.index = index;
+
     // function writeUserData(index, title, author, readStatus, pages, rendered) {
     //   firebase.database().ref('library/' + index).set({
     //     author: author,
@@ -213,7 +219,10 @@ function updateIndices() {
     //     rendered: rendered
     //   });
     // }
-    writeUserData(index, book.title, book.author, book.readStatus, book.pages, book.rendered)
+    if (length > 0) {
+      writeUserData(index, book.title, book.author, book.readStatus, book.pages, book.rendered)
+    }
+    
   });
 }
 function resetInputs() {
